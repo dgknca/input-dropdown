@@ -83,7 +83,7 @@ export default class InputDropdown implements IProperties {
   private setDropdownItems(): void {
     this.dropdown.innerHTML = ''
 
-    this.data.forEach((obj: any) => {
+    this.data?.forEach((obj: any) => {
       const item = document.createElement('div')
       item.classList.add(DROPDOWN_ITEM_CLASS)
 
