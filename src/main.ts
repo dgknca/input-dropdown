@@ -34,7 +34,7 @@ interface IProperties {
 export default class InputDropdown implements IProperties {
   parameters: any
   selector: string
-  data: any[]
+  data?: any[]
   dataAliases: ObjDataAliases
   input!: HTMLInputElement
   inputHeight!: number
