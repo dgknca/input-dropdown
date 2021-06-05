@@ -11,38 +11,9 @@
     <input type="text" id="inp" />
     <script src="../dist/input-dropdown.umd.js"></script>
     <script>
-      const data = [
-        {
-          name: 'Seoul National University',
-          domain: 'snu.ac.kr',
-          logo: 'https://logo.clearbit.com/snu.ac.kr'
-        },
-        {
-          name: 'SEOClerks',
-          domain: 'seoclerks.com',
-          logo: 'https://logo.clearbit.com/seoclerks.com'
-        },
-        {
-          name: 'SEO Khazana',
-          domain: 'seokhazana.com',
-          logo: 'https://logo.clearbit.com/seokhazana.com'
-        },
-        {
-          name: 'Seoul Metropolitan Library',
-          domain: 'seoul.go.kr',
-          logo: 'https://logo.clearbit.com/seoul.go.kr'
-        },
-        {
-          name: 'SEO Review Tools',
-          domain: 'seoreviewtools.com',
-          logo: 'https://logo.clearbit.com/seoreviewtools.com'
-        }
-      ]
-
       const inp = document.querySelector('#inp')
       const instance1 = new InputDropdown({
         selector: '#inp',
-        data,
         dataAliases: {
           img: 'logo',
           text1: 'name',

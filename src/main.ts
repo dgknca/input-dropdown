@@ -17,7 +17,7 @@ interface ObjDataAliases {
 interface IConstructorParameters {
   selector: string
   dropdownWidth: string
-  data: any[]
+  data?: any[]
   dataAliases: ObjDataAliases
 }
 
