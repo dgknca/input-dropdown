@@ -8,7 +8,7 @@ import {
   DROPDOWN_ITEM_TXT_2_CLASS
 } from './constants'
 
-interface ObjDataAliases {
+interface IDataAliases {
   img?: string
   text1?: string
   text2?: string
@@ -18,7 +18,7 @@ interface IConstructorParameters {
   selector: string
   dropdownWidth: string
   data?: any[]
-  dataAliases: ObjDataAliases
+  dataAliases: IDataAliases
 }
 
 interface IProperties {
@@ -35,7 +35,7 @@ export default class InputDropdown implements IProperties {
   parameters: any
   selector: string
   data?: any[]
-  dataAliases: ObjDataAliases
+  dataAliases: IDataAliases
   input!: HTMLInputElement
   inputHeight!: number
   inputWidth!: number
