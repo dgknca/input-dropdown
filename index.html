@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../dist/input-dropdown.min.css" />
+    <title>Input Dropdown Demo</title>
+  </head>
+  <body>
+    <input type="text" id="inp" />
+    <script src="../dist/input-dropdown.umd.js"></script>
+    <script>
+      const data = [
+        {
+          name: 'Seoul National University',
+          domain: 'snu.ac.kr',
+          logo: 'https://logo.clearbit.com/snu.ac.kr'
+        },
+        {
+          name: 'SEOClerks',
+          domain: 'seoclerks.com',
+          logo: 'https://logo.clearbit.com/seoclerks.com'
+        },
+        {
+          name: 'SEO Khazana',
+          domain: 'seokhazana.com',
+          logo: 'https://logo.clearbit.com/seokhazana.com'
+        },
+        {
+          name: 'Seoul Metropolitan Library',
+          domain: 'seoul.go.kr',
+          logo: 'https://logo.clearbit.com/seoul.go.kr'
+        },
+        {
+          name: 'SEO Review Tools',
+          domain: 'seoreviewtools.com',
+          logo: 'https://logo.clearbit.com/seoreviewtools.com'
+        }
+      ]
+
+      const inp = document.querySelector('#inp')
+      const instance1 = new InputDropdown({
+        selector: '#inp',
+        data,
+        dataAliases: {
+          img: 'logo',
+          text1: 'name',
+          text2: 'domain'
+        },
+        dropdownWidth: '400px'
+      })
+
+      inp.addEventListener('input', (e) => {
+        if (!e.target.value) return
+        fetch(
+          `https://autocomplete.clearbit.com/v1/companies/suggest?query=${e.target.value}`,
+          {
+            method: 'get'
+          }
+        )
+          .then((response) => {
+            return response.json()
+          })
+          .then((updatedData) => {
+            instance1.updateData(updatedData)
+          })
+      })
+    </script>
+  </body>
+</html>
