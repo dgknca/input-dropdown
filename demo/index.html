@@ -11,6 +11,9 @@
     <input type="text" id="inp" />
     <script src="../dist/input-dropdown.umd.js"></script>
     <script>
+      let controller = new AbortController()
+      let signal = controller.signal
+
       const inp = document.querySelector('#inp')
       const instance1 = new InputDropdown({
         selector: '#inp',
@@ -23,11 +26,16 @@
       })
 
       inp.addEventListener('input', (e) => {
+        controller.abort()
         if (!e.target.value) return
+        controller = new AbortController()
+        signal = controller.signal
+
         fetch(
           `https://autocomplete.clearbit.com/v1/companies/suggest?query=${e.target.value}`,
           {
-            method: 'get'
+            method: 'get',
+            signal: signal
           }
         )
           .then((response) => {
