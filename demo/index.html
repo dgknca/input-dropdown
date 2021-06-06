@@ -9,7 +9,8 @@
   </head>
   <body>
     <input type="text" id="inp" />
-    <script src="../dist/input-dropdown.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/keywalk@0.4.1/dist/keywalk.min.js"></script>
+    <script src="../dist/input-dropdown.min.js"></script>
     <script>
       let controller = new AbortController()
       let signal = controller.signal
@@ -22,7 +23,14 @@
           text1: 'name',
           text2: 'domain'
         },
-        dropdownWidth: '400px'
+        dropdownWidth: '400px',
+        useKeywalk: true,
+        onWalk(element, index) {
+          console.log('hovered element', element)
+        },
+        onSelect(element, index) {
+          console.log('selected element', element)
+        }
       })
 
       inp.addEventListener('input', (e) => {

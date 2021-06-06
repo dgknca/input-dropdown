@@ -1,3 +1,5 @@
+import Keywalk from 'keywalk'
+import { onWalkFunction, onSelectFunction } from './types'
 import './style.scss'
 
 import {
@@ -14,11 +16,14 @@ interface IDataAliases {
   text2?: string
 }
 
-interface IConstructorParameters {
+interface IConstructorArgs {
   selector: string
   dropdownWidth: string
   data?: any[]
   dataAliases: IDataAliases
+  onWalk?: onWalkFunction
+  onSelect?: onSelectFunction
+  useKeywalk?: boolean
 }
 
 interface IProperties {
@@ -32,7 +37,7 @@ interface IProperties {
 }
 
 export default class InputDropdown implements IProperties {
-  parameters: any
+  args: IConstructorArgs
   selector: string
   data?: any[]
   dataAliases: IDataAliases
@@ -43,15 +48,23 @@ export default class InputDropdown implements IProperties {
   inputTop!: number
   dropdown!: HTMLElement
   dropdownWidth: string
+  useKeywalk: boolean
 
-  constructor(parameters: IConstructorParameters) {
-    const { selector, data, dataAliases, dropdownWidth } = parameters
+  constructor(args: IConstructorArgs) {
+    const {
+      selector,
+      data,
+      dataAliases,
+      dropdownWidth,
+      useKeywalk = false
+    } = args
 
-    this.parameters = parameters
+    this.args = args
     this.selector = selector
     this.dropdownWidth = dropdownWidth
     this.data = data
     this.dataAliases = dataAliases
+    this.useKeywalk = useKeywalk
 
     this.initInput()
     this.initDropdown()
@@ -116,10 +129,33 @@ export default class InputDropdown implements IProperties {
 
   private insertDropdown(): void {
     document.body.appendChild(this.dropdown)
+
+    if(this.useKeywalk) this.initKeywalk()
   }
 
   private hideDropdown(): void {
     this.dropdown.remove()
+  }
+
+  private initKeywalk(): void {
+    new Keywalk({
+      trigger: this.input,
+      container: this.dropdown,
+      onWalk: (element: HTMLElement, index: number) => {
+        this.emitOnWalk(element, index)
+      },
+      onSelect: (element: HTMLElement, index: number) => {
+        this.emitOnSelect(element, index)
+      }
+    })
+  }
+
+  private emitOnWalk(element: HTMLElement, index: number): void {
+    if (this.args.onWalk) this.args.onWalk(element, index)
+  }
+
+  private emitOnSelect(element: HTMLElement, index: number): void {
+    if (this.args.onSelect) this.args.onSelect(element, index)
   }
 
   public updateData(updatedData: any[]): void {
