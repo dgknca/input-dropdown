@@ -68,6 +68,11 @@ export default class InputDropdown implements IProperties {
 
     this.initInput()
     this.initDropdown()
+
+    document.addEventListener('click', (ev: Event) => {
+      this.detectOnFocusInput(ev.target as HTMLElement)
+      this.detectOnBlurInputOrDropdown(ev.target as HTMLElement)
+    })
   }
 
   private initInput(): void {
@@ -79,6 +84,7 @@ export default class InputDropdown implements IProperties {
     this.inputTop = top
 
     this.input.addEventListener('input', (e: Event) => {
+      this.showDropdown()
       if ((<HTMLInputElement>e.target).value.length === 0) this.hideDropdown()
     })
   }
@@ -129,12 +135,38 @@ export default class InputDropdown implements IProperties {
 
   private insertDropdown(): void {
     document.body.appendChild(this.dropdown)
+    if (this.useKeywalk) this.initKeywalk()
+  }
 
-    if(this.useKeywalk) this.initKeywalk()
+  private showDropdown(): void {
+    this.dropdown.style.display = 'block'
   }
 
   private hideDropdown(): void {
-    this.dropdown.remove()
+    this.dropdown.style.display = 'none'
+  }
+
+  private detectOnFocusInput(el: HTMLElement): void {
+    if (
+      this.input.value.length > 0 &&
+      (el.matches(this.selector) ||
+        el.matches(`${this.selector} *`) ||
+        el.matches(`.${DROPDOWN_CONTAINER_CLASS}`) ||
+        el.matches(`.${DROPDOWN_CONTAINER_CLASS} *`))
+    ) {
+      this.showDropdown()
+    }
+  }
+
+  private detectOnBlurInputOrDropdown(el: HTMLElement): void {
+    if (
+      !el.matches(this.selector) &&
+      !el.matches(`${this.selector} *`) &&
+      !el.matches(`.${DROPDOWN_CONTAINER_CLASS}`) &&
+      !el.matches(`.${DROPDOWN_CONTAINER_CLASS} *`)
+    ) {
+      this.hideDropdown()
+    }
   }
 
   private initKeywalk(): void {
