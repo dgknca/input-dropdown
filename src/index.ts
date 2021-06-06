@@ -3,6 +3,7 @@ import { onWalkFunction, onSelectFunction } from './types'
 import './style.scss'
 
 import {
+  CSS_CLASS_PREFIX,
   DROPDOWN_CONTAINER_CLASS,
   DROPDOWN_ITEM_CLASS,
   DROPDOWN_ITEM_IMG_CLASS,
@@ -18,7 +19,8 @@ interface IDataAliases {
 
 interface IConstructorArgs {
   selector: string
-  dropdownWidth: string
+  dropdownWidth?: string
+  dropdownClass?: string
   data?: any[]
   dataAliases: IDataAliases
   onWalk?: onWalkFunction
@@ -33,7 +35,6 @@ interface IProperties {
   inputTop: number
   input: HTMLInputElement
   dropdown: HTMLElement
-  dropdownWidth?: string
 }
 
 export default class InputDropdown implements IProperties {
@@ -48,6 +49,7 @@ export default class InputDropdown implements IProperties {
   inputTop!: number
   dropdown!: HTMLElement
   dropdownWidth: string
+  dropdownClass: string
   useKeywalk: boolean
 
   constructor(args: IConstructorArgs) {
@@ -56,12 +58,14 @@ export default class InputDropdown implements IProperties {
       data,
       dataAliases,
       dropdownWidth,
+      dropdownClass,
       useKeywalk = false
     } = args
 
     this.args = args
     this.selector = selector
     this.dropdownWidth = dropdownWidth
+    this.dropdownClass = dropdownClass
     this.data = data
     this.dataAliases = dataAliases
     this.useKeywalk = useKeywalk
@@ -91,7 +95,10 @@ export default class InputDropdown implements IProperties {
 
   private initDropdown(): void {
     this.dropdown = document.createElement('div')
-    this.dropdown.classList.add(DROPDOWN_CONTAINER_CLASS)
+
+    this.dropdown.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`)
+    if (this.dropdownClass) this.dropdown.classList.add(this.dropdownClass)
+
     this.dropdown.style.width = !this.dropdownWidth
       ? `${this.inputWidth}px`
       : this.dropdownWidth
@@ -104,25 +111,25 @@ export default class InputDropdown implements IProperties {
 
     this.data?.forEach((obj: any) => {
       const item = document.createElement('div')
-      item.classList.add(DROPDOWN_ITEM_CLASS)
+      item.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_CLASS}`)
 
       if (this.dataAliases.img) {
         const itemImg = document.createElement('div')
-        itemImg.classList.add(DROPDOWN_ITEM_IMG_CLASS)
+        itemImg.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_IMG_CLASS}`)
         itemImg.style.backgroundImage = `url(${obj[this.dataAliases.img]})`
         item.appendChild(itemImg)
       }
 
       if (this.dataAliases.text1) {
         const itemTxt1 = document.createElement('div')
-        itemTxt1.classList.add(DROPDOWN_ITEM_TXT_1_CLASS)
+        itemTxt1.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_1_CLASS}`)
         itemTxt1.innerHTML = obj[this.dataAliases.text1]
         item.appendChild(itemTxt1)
       }
 
       if (this.dataAliases.text2) {
         const itemTxt2 = document.createElement('div')
-        itemTxt2.classList.add(DROPDOWN_ITEM_TXT_2_CLASS)
+        itemTxt2.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_2_CLASS}`)
         itemTxt2.innerHTML = obj[this.dataAliases.text2]
         item.appendChild(itemTxt2)
       }
@@ -151,8 +158,8 @@ export default class InputDropdown implements IProperties {
       this.input.value.length > 0 &&
       (el.matches(this.selector) ||
         el.matches(`${this.selector} *`) ||
-        el.matches(`.${DROPDOWN_CONTAINER_CLASS}`) ||
-        el.matches(`.${DROPDOWN_CONTAINER_CLASS} *`))
+        el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`) ||
+        el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS} *`))
     ) {
       this.showDropdown()
     }
@@ -162,8 +169,8 @@ export default class InputDropdown implements IProperties {
     if (
       !el.matches(this.selector) &&
       !el.matches(`${this.selector} *`) &&
-      !el.matches(`.${DROPDOWN_CONTAINER_CLASS}`) &&
-      !el.matches(`.${DROPDOWN_CONTAINER_CLASS} *`)
+      !el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`) &&
+      !el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS} *`)
     ) {
       this.hideDropdown()
     }
