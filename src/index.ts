@@ -6,15 +6,15 @@ import {
   CSS_CLASS_PREFIX,
   DROPDOWN_CONTAINER_CLASS,
   DROPDOWN_ITEM_CLASS,
-  DROPDOWN_ITEM_IMG_CLASS,
-  DROPDOWN_ITEM_TXT_1_CLASS,
-  DROPDOWN_ITEM_TXT_2_CLASS
+  DROPDOWN_ITEM_ICON_CLASS,
+  DROPDOWN_ITEM_TITLE_CLASS,
+  DROPDOWN_ITEM_SUBTITLE_CLASS
 } from './constants'
 
 interface IDataAliases {
-  img?: string
-  text1?: string
-  text2?: string
+  icon?: string
+  title?: string
+  subtitle?: string
 }
 
 interface IConstructorArgs {
@@ -135,29 +135,29 @@ export default class InputDropdown implements IProperties {
       const item = document.createElement('div')
       item.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_CLASS}`)
 
-      if (this.dataAliases.img) {
-        const itemImg = document.createElement('div')
-        itemImg.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_IMG_CLASS}`)
-        itemImg.style.backgroundImage = `url(${obj[this.dataAliases.img]})`
-        item.appendChild(itemImg)
+      if (this.dataAliases.icon) {
+        const itemIcon = document.createElement('div')
+        itemIcon.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_ICON_CLASS}`)
+        itemIcon.style.backgroundImage = `url(${obj[this.dataAliases.icon]})`
+        item.appendChild(itemIcon)
       }
 
-      if (this.dataAliases.text1) {
-        const itemTxt1 = document.createElement('div')
-        itemTxt1.classList.add(
-          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_1_CLASS}`
+      if (this.dataAliases.title) {
+        const itemTitle = document.createElement('div')
+        itemTitle.classList.add(
+          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TITLE_CLASS}`
         )
-        itemTxt1.innerHTML = obj[this.dataAliases.text1]
-        item.appendChild(itemTxt1)
+        itemTitle.innerHTML = obj[this.dataAliases.title]
+        item.appendChild(itemTitle)
       }
 
-      if (this.dataAliases.text2) {
-        const itemTxt2 = document.createElement('div')
-        itemTxt2.classList.add(
-          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_2_CLASS}`
+      if (this.dataAliases.subtitle) {
+        const itemSubtitle = document.createElement('div')
+        itemSubtitle.classList.add(
+          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_SUBTITLE_CLASS}`
         )
-        itemTxt2.innerHTML = obj[this.dataAliases.text2]
-        item.appendChild(itemTxt2)
+        itemSubtitle.innerHTML = obj[this.dataAliases.subtitle]
+        item.appendChild(itemSubtitle)
       }
 
       this.dropdown.appendChild(item)

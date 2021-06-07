@@ -1,15 +1,15 @@
 const CSS_CLASS_PREFIX = 'inpd'
 const DROPDOWN_CONTAINER_CLASS = 'dropdown-container'
 const DROPDOWN_ITEM_CLASS = 'dropdown-item'
-const DROPDOWN_ITEM_IMG_CLASS = 'dropdown-item__img'
-const DROPDOWN_ITEM_TXT_1_CLASS = 'dropdown-item__txt1'
-const DROPDOWN_ITEM_TXT_2_CLASS = 'dropdown-item__txt2'
+const DROPDOWN_ITEM_ICON_CLASS = 'dropdown-item__icon'
+const DROPDOWN_ITEM_TITLE_CLASS = 'dropdown-item__title'
+const DROPDOWN_ITEM_SUBTITLE_CLASS = 'dropdown-item__subtitle'
 
 export {
   CSS_CLASS_PREFIX,
   DROPDOWN_CONTAINER_CLASS,
   DROPDOWN_ITEM_CLASS,
-  DROPDOWN_ITEM_IMG_CLASS,
-  DROPDOWN_ITEM_TXT_1_CLASS,
-  DROPDOWN_ITEM_TXT_2_CLASS
+  DROPDOWN_ITEM_ICON_CLASS,
+  DROPDOWN_ITEM_TITLE_CLASS,
+  DROPDOWN_ITEM_SUBTITLE_CLASS
 }
