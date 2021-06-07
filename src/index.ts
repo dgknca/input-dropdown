@@ -35,6 +35,8 @@ interface IProperties {
   inputTop: number
   input: HTMLInputElement
   dropdown: HTMLElement
+  isDropdownInserted: boolean
+  keywalkInstance: Keywalk
 }
 
 export default class InputDropdown implements IProperties {
@@ -51,6 +53,8 @@ export default class InputDropdown implements IProperties {
   dropdownWidth: string
   dropdownClass: string
   useKeywalk: boolean
+  isDropdownInserted: boolean
+  keywalkInstance: Keywalk
 
   constructor(args: IConstructorArgs) {
     const {
@@ -69,6 +73,7 @@ export default class InputDropdown implements IProperties {
     this.data = data
     this.dataAliases = dataAliases
     this.useKeywalk = useKeywalk
+    this.isDropdownInserted = false
 
     this.initInput()
     this.initDropdown()
@@ -81,11 +86,14 @@ export default class InputDropdown implements IProperties {
 
   private initInput(): void {
     this.input = document.querySelector(this.selector) as HTMLInputElement
-    const { height, width, left, top } = this.input.getBoundingClientRect()
-    this.inputHeight = height
-    this.inputWidth = width
-    this.inputLeft = left
-    this.inputTop = top
+
+    // get the position after window loaded to avoid layout shifting
+    window.addEventListener('load', () => {
+      this.setInputPosition()
+    })
+    window.addEventListener('resize', () => {
+      this.setInputPosition()
+    })
 
     this.input.addEventListener('input', (e: Event) => {
       this.showDropdown()
@@ -93,12 +101,26 @@ export default class InputDropdown implements IProperties {
     })
   }
 
+  private setInputPosition(): void {
+    const { height, width, left, top } = this.input.getBoundingClientRect()
+    this.inputHeight = height
+    this.inputWidth = width
+    this.inputLeft = left
+    this.inputTop = top
+
+    if (this.dropdown) this.setDropdownPosition()
+  }
+
   private initDropdown(): void {
     this.dropdown = document.createElement('div')
-
-    this.dropdown.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`)
+    this.dropdown.classList.add(
+      `${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`
+    )
     if (this.dropdownClass) this.dropdown.classList.add(this.dropdownClass)
+    this.setDropdownPosition()
+  }
 
+  private setDropdownPosition(): void {
     this.dropdown.style.width = !this.dropdownWidth
       ? `${this.inputWidth}px`
       : this.dropdownWidth
@@ -106,7 +128,7 @@ export default class InputDropdown implements IProperties {
     this.dropdown.style.top = `${this.inputTop + this.inputHeight}px` // TODO: add distance
   }
 
-  private setDropdownItems(): void {
+  private setDropdownItems(insert = true): void {
     this.dropdown.innerHTML = ''
 
     this.data?.forEach((obj: any) => {
@@ -122,14 +144,18 @@ export default class InputDropdown implements IProperties {
 
       if (this.dataAliases.text1) {
         const itemTxt1 = document.createElement('div')
-        itemTxt1.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_1_CLASS}`)
+        itemTxt1.classList.add(
+          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_1_CLASS}`
+        )
         itemTxt1.innerHTML = obj[this.dataAliases.text1]
         item.appendChild(itemTxt1)
       }
 
       if (this.dataAliases.text2) {
         const itemTxt2 = document.createElement('div')
-        itemTxt2.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_2_CLASS}`)
+        itemTxt2.classList.add(
+          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_TXT_2_CLASS}`
+        )
         itemTxt2.innerHTML = obj[this.dataAliases.text2]
         item.appendChild(itemTxt2)
       }
@@ -137,20 +163,22 @@ export default class InputDropdown implements IProperties {
       this.dropdown.appendChild(item)
     })
 
-    this.insertDropdown()
+    if(!this.isDropdownInserted) this.insertDropdown()
   }
 
   private insertDropdown(): void {
     document.body.appendChild(this.dropdown)
+    this.isDropdownInserted = true
     if (this.useKeywalk) this.initKeywalk()
   }
 
-  private showDropdown(): void {
+  public showDropdown(): void {
     this.dropdown.style.display = 'block'
   }
 
-  private hideDropdown(): void {
+  public hideDropdown(): void {
     this.dropdown.style.display = 'none'
+    if (this.keywalkInstance) this.keywalkInstance.reset()
   }
 
   private detectOnFocusInput(el: HTMLElement): void {
@@ -177,7 +205,7 @@ export default class InputDropdown implements IProperties {
   }
 
   private initKeywalk(): void {
-    new Keywalk({
+    this.keywalkInstance = new Keywalk({
       trigger: this.input,
       container: this.dropdown,
       onWalk: (element: HTMLElement, index: number) => {
@@ -190,11 +218,11 @@ export default class InputDropdown implements IProperties {
   }
 
   private emitOnWalk(element: HTMLElement, index: number): void {
-    if (this.args.onWalk) this.args.onWalk(element, index)
+    if (this.args.onWalk) this.args.onWalk(element, index, this.data[index])
   }
 
   private emitOnSelect(element: HTMLElement, index: number): void {
-    if (this.args.onSelect) this.args.onSelect(element, index)
+    if (this.args.onSelect) this.args.onSelect(element, index, this.data[index])
   }
 
   public updateData(updatedData: any[]): void {
