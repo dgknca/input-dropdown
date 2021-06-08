@@ -77,9 +77,9 @@ export default class InputDropdown implements IProperties {
     this.dataAliases = dataAliases
     this.useKeywalk = useKeywalk
     this.isDropdownInserted = false
-    this.dropdownSpecificClass = `inpd-dropdown-container-${Date.now()}-${
-      Math.random() * 100
-    }`
+    this.dropdownSpecificClass = `inpd-dropdown-container-${Math.random()
+      .toString(36)
+      .substr(2, 5)}`
 
     this.initInput()
     this.initDropdown()
