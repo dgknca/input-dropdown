@@ -35,10 +35,12 @@ interface IProperties {
   inputTop: number
   input: HTMLInputElement
   dropdown: HTMLElement
+  dropdownSpecificClass: string
   isDropdownInserted: boolean
   keywalkInstance: Keywalk
 }
 
+declare const window: any
 export default class InputDropdown implements IProperties {
   args: IConstructorArgs
   selector: string
@@ -50,6 +52,7 @@ export default class InputDropdown implements IProperties {
   inputLeft!: number
   inputTop!: number
   dropdown!: HTMLElement
+  dropdownSpecificClass: string
   dropdownWidth: string
   dropdownClass: string
   useKeywalk: boolean
@@ -74,6 +77,9 @@ export default class InputDropdown implements IProperties {
     this.dataAliases = dataAliases
     this.useKeywalk = useKeywalk
     this.isDropdownInserted = false
+    this.dropdownSpecificClass = `inpd-dropdown-container-${Date.now()}-${
+      Math.random() * 100
+    }`
 
     this.initInput()
     this.initDropdown()
@@ -92,6 +98,9 @@ export default class InputDropdown implements IProperties {
       this.setInputPosition()
     })
     window.addEventListener('resize', () => {
+      this.setInputPosition()
+    })
+    this.observeDOM(document.documentElement, () => {
       this.setInputPosition()
     })
 
@@ -116,6 +125,7 @@ export default class InputDropdown implements IProperties {
     this.dropdown.classList.add(
       `${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`
     )
+    this.dropdown.classList.add(this.dropdownSpecificClass)
     if (this.dropdownClass) this.dropdown.classList.add(this.dropdownClass)
     this.setDropdownPosition()
   }
@@ -128,7 +138,7 @@ export default class InputDropdown implements IProperties {
     this.dropdown.style.top = `${this.inputTop + this.inputHeight}px` // TODO: add distance
   }
 
-  private setDropdownItems(insert = true): void {
+  private setDropdownItems(): void {
     this.dropdown.innerHTML = ''
 
     this.data?.forEach((obj: any) => {
@@ -137,7 +147,9 @@ export default class InputDropdown implements IProperties {
 
       if (this.dataAliases.icon) {
         const itemIcon = document.createElement('div')
-        itemIcon.classList.add(`${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_ICON_CLASS}`)
+        itemIcon.classList.add(
+          `${CSS_CLASS_PREFIX}-${DROPDOWN_ITEM_ICON_CLASS}`
+        )
         itemIcon.style.backgroundImage = `url(${obj[this.dataAliases.icon]})`
         item.appendChild(itemIcon)
       }
@@ -163,7 +175,7 @@ export default class InputDropdown implements IProperties {
       this.dropdown.appendChild(item)
     })
 
-    if(!this.isDropdownInserted) this.insertDropdown()
+    if (!this.isDropdownInserted) this.insertDropdown()
   }
 
   private insertDropdown(): void {
@@ -186,8 +198,8 @@ export default class InputDropdown implements IProperties {
       this.input.value.length > 0 &&
       (el.matches(this.selector) ||
         el.matches(`${this.selector} *`) ||
-        el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`) ||
-        el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS} *`))
+        el.matches(`.${this.dropdownSpecificClass}`) ||
+        el.matches(`.${this.dropdownSpecificClass} *`))
     ) {
       this.showDropdown()
     }
@@ -197,8 +209,8 @@ export default class InputDropdown implements IProperties {
     if (
       !el.matches(this.selector) &&
       !el.matches(`${this.selector} *`) &&
-      !el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS}`) &&
-      !el.matches(`.${CSS_CLASS_PREFIX}-${DROPDOWN_CONTAINER_CLASS} *`)
+      !el.matches(`.${this.dropdownSpecificClass}`) &&
+      !el.matches(`.${this.dropdownSpecificClass} *`)
     ) {
       this.hideDropdown()
     }
@@ -228,5 +240,27 @@ export default class InputDropdown implements IProperties {
   public updateData(updatedData: any[]): void {
     this.data = updatedData
     this.setDropdownItems()
+  }
+
+  private observeDOM(obj: any, callback: any): void {
+    const MutationObserver =
+      window.MutationObserver || window.WebKitMutationObserver
+
+    if (!obj || obj.nodeType !== 1) return
+
+    if (MutationObserver) {
+      // define a new observer
+      const mutationObserver = new MutationObserver(callback)
+
+      // have the observer observe foo for changes in children
+      mutationObserver.observe(obj, { childList: true, subtree: true })
+      return mutationObserver
+    }
+
+    // browser support fallback
+    else if (window.addEventListener) {
+      obj.addEventListener('DOMNodeInserted', callback, false)
+      obj.addEventListener('DOMNodeRemoved', callback, false)
+    }
   }
 }

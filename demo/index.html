@@ -7,16 +7,21 @@
     <link rel="stylesheet" href="../dist/input-dropdown.min.css" />
     <title>Input Dropdown Demo</title>
     <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
       input {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        margin: 10px;
       }
     </style>
   </head>
   <body>
     <input type="text" id="inp" />
+    <input type="text" id="inp2" />
     <script src="https://cdn.jsdelivr.net/npm/keywalk@0.4.1/dist/keywalk.min.js"></script>
     <script src="../dist/input-dropdown.min.js"></script>
     <script>
@@ -60,6 +65,46 @@
           })
           .then((updatedData) => {
             instance1.updateData(updatedData)
+          })
+      })
+
+      const inp2 = document.querySelector('#inp2')
+      const instance2 = new InputDropdown({
+        selector: '#inp2',
+        dataAliases: {
+          icon: 'logo',
+          title: 'name',
+          subtitle: 'domain'
+        },
+        dropdownWidth: '400px',
+        dropdownClass: 'my-dropdown-class',
+        useKeywalk: true,
+        onWalk(element, index) {
+          console.log('hovered element', element)
+        },
+        onSelect(element, index) {
+          console.log('selected element', element)
+        }
+      })
+
+      inp2.addEventListener('input', (e) => {
+        controller.abort()
+        if (!e.target.value) return
+        controller = new AbortController()
+        signal = controller.signal
+
+        fetch(
+          `https://autocomplete.clearbit.com/v1/companies/suggest?query=${e.target.value}`,
+          {
+            method: 'get',
+            signal: signal
+          }
+        )
+          .then((response) => {
+            return response.json()
+          })
+          .then((updatedData) => {
+            instance2.updateData(updatedData)
           })
       })
     </script>
