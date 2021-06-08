@@ -253,7 +253,11 @@ export default class InputDropdown implements IProperties {
       const mutationObserver = new MutationObserver(callback)
 
       // have the observer observe foo for changes in children
-      mutationObserver.observe(obj, { childList: true, subtree: true })
+      mutationObserver.observe(obj, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      })
       return mutationObserver
     }
 
